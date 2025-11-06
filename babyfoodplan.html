@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>婴儿辅食添加计划表</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #3a7bc8;
+            --secondary: #f39c12;
+            --light: #f8f9fa;
+            --lighter: #f5f9ff;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --text: #34495e;
+            --text-light: #7f8c8d;
+            --border: #e1e8ed;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-text-size-adjust: 100%;
+            overflow-x: hidden;
+        }
+        
+        .page {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            min-height: calc(100vh - 30px);
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        
+        h1 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .baby-icon {
+            font-size: 1.5rem;
+            margin: 0 5px;
+            color: var(--primary);
+        }
+        
+        .mini-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .mini-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .mini-stat-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .controls {
+            text-align: right;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--lighter);
+            border-radius: 30px;
+            padding: 8px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 5px 10px;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 800px;
+        }
+        
+        th, td {
+            border: none;
+            padding: 15px;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        
+        th {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        td {
+            background-color: white;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        tr:nth-child(even) td {
+            background-color: var(--lighter);
+        }
+        
+        tr:hover td {
+            background-color: #e9f4ff;
+        }
+        
+        .stage-header {
+            background: linear-gradient(135deg, var(--dark), #34495e) !important;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .stage-header td {
+            padding: 12px;
+            background: transparent;
+            cursor: default;
+        }
+        
+        .phase {
+            background-color: #f0f7ff;
+            font-weight: bold;
+        }
+        
+        .phase td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        
+        .phase td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        
+        .day-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .food-highlight {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .amount-recommendation {
+            color: #d35400;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        /* 状态标记样式 */
+        .status-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: transparent;
+            transition: all 0.3s;
+        }
+        
+        .status-good .status-indicator {
+            background-color: var(--success);
+        }
+        
+        .status-dislike .status-indicator {
+            background-color: var(--warning);
+        }
+        
+        .status-allergy .status-indicator {
+            background-color: var(--danger);
+        }
+        
+        /* 二级页面样式 */
+        .detail-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .detail-page.active {
+            display: block;
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .detail-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+            margin: 0 15px;
+        }
+        
+        .detail-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .detail-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: var(--lighter);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .detail-section h3 {
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+        }
+        
+        .status-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        
+        .status-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 150px;
+            max-width: 200px;
+        }
+        
+        .status-good-btn {
+            background: var(--success);
+            color: white;
+        }
+        
+        .status-dislike-btn {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
+        .status-allergy-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .status-clear-btn {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .status-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .status-btn:active {
+            transform: translateY(0);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .current-status {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .status-good-text {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+        
+        .status-dislike-text {
+            background: rgba(241, 196, 15, 0.1);
+            color: #d35400;
+            border: 2px solid var(--warning);
+        }
+        
+        .status-allergy-text {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+            border: 2px solid var(--danger);
+        }
+        
+        .status-none-text {
+            background: rgba(189, 195, 199, 0.1);
+            color: #7f8c8d;
+            border: 2px solid #bdc3c7;
+        }
+        
+        .note {
+            background: linear-gradient(135deg, #fff9e6, #fff0cc);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            border-left: 4px solid var(--warning);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+        }
+        
+        .note h3 {
+            margin-bottom: 10px;
+            color: #d35400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            border-top: 3px solid var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+        }
+        
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            table {
+                min-width: 1000px;
+            }
+            
+            th, td {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+        }
+        
+        /* 横屏优化 */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .table-container {
+                max-height: 60vh;
+                overflow-y: auto;
+            }
+            
+            th {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        tr {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        
+        @media (max-width: 768px) {
+            .toast {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+                text-align: center;
+            }
+        }
+        
+        /* 滑动动画 */
+        .slide-left {
+            animation: slideLeft 0.3s ease-out;
+        }
+        
+        .slide-right {
+            animation: slideRight 0.3s ease-out;
+        }
+        
+        @keyframes slideLeft {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideRight {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 主页面 -->
+    <div id="main-page" class="page active">
+        <div class="container">
+            <div class="header">
+                <h1>婴儿辅食添加100天详细计划表</h1>
+                <p class="subtitle">从营养、消化、排敏等角度综合考虑的辅食添加顺序</p>
+                <div>
+                    <span class="baby-icon">👶</span>
+                    <span>科学喂养 · 健康成长</span>
+                    <span class="baby-icon">🥄</span>
+                </div>
+                <div class="mini-stats">
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">100天</span>
+                        <span>计划</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">4个</span>
+                        <span>阶段</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">20+种</span>
+                        <span>食材</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-stat-value">3日</span>
+                        <span>排敏法</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" id="search-input" placeholder="搜索食物或阶段...">
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="food-plan-table">
+                    <thead>
+                        <tr>
+                            <th width="12%">阶段</th>
+                            <th width="10%">天数</th>
+                            <th width="22%">主要新增食物与顺序</th>
+                            <th width="30%">食物质地与烹饪要点</th>
+                            <th width="26%">营养与排敏关注点</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 表格内容将在这里动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="note">
+                <h3>💡 使用提示</h3>
+                <p>点击表格中的任意行可以查看该食物的详细信息并记录宝宝的接受情况。颜色标记表示：<span style="color:var(--success)">绿色-接受良好</span>，<span style="color:var(--warning)">黄色-不爱吃</span>，<span style="color:var(--danger)">红色-过敏</span>。</p>
+            </div>
+            
+            <div class="footer">
+                <p>👶 祝宝宝健康成长！🥄 辅食添加需根据宝宝个体差异灵活调整。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 二级详情页面 -->
+    <div id="detail-page" class="detail-page">
+        <div class="container">
+            <div class="detail-header">
+                <button class="back-btn" onclick="goBack()">
+                    <span>←</span> 返回
+                </button>
+                <h2 class="detail-title" id="detail-title">食物详情</h2>
+                <div style="width: 80px;"></div> <!-- 占位符，保持布局平衡 -->
+            </div>
+            
+            <div class="detail-content" id="detail-content">
+                <!-- 详情内容将在这里动态生成 -->
+            </div>
+            
+            <div class="current-status" id="current-status">
+                <!-- 当前状态将在这里显示 -->
+            </div>
+            
+            <div class="status-buttons">
+                <button class="status-btn status-good-btn" onclick="setStatus('good')">接受良好</button>
+                <button class="status-btn status-dislike-btn" onclick="setStatus('dislike')">不爱吃</button>
+                <button class="status-btn status-allergy-btn" onclick="setStatus('allergy')">过敏</button>
+                <button class="status-btn status-clear-btn" onclick="setStatus('none')">清除记录</button>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prev-btn" onclick="navigateToAdjacent(-1)">
+                    <span>←</span> 上一个
+                </button>
+                <button class="nav-btn" id="next-btn" onclick="navigateToAdjacent(1)">
+                    下一个 <span>→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div id="export-toast" class="toast">操作成功！</div>
+    
+    <script>
+        // 完整的100天食物数据
+        const foodData = [
+            // 第一阶段：单一食材排敏 (第1-30天)
+            {
+                stage: "适应期",
+                days: "第1-3天",
+                food: "强化铁婴儿米粉",
+                texture: "用母乳、配方奶或温水冲调成<strong>非常稀的流质状</strong>（能挂勺缓慢滴落）。首次尝试1-2茶匙即可。",
+                nutrition: "<strong>核心目标</strong>：适应吞咽辅食，观察对米粉的耐受性。<strong>排敏</strong>：这是首次排敏观察，需留意是否有皮疹、腹泻、呕吐等反应。",
+                amount: "1-2茶匙，观察宝宝接受度"
+            },
+            {
+                stage: "适应期",
+                days: "第4-7天",
+                food: "继续强化铁米粉，逐步增加稠度和量",
+                texture: "将米粉调成<strong>细腻的泥糊状</strong>（类似酸奶），量可增至3-5勺。",
+                nutrition: "<strong>消化</strong>：观察宝宝对增稠后米糊的接受度，确保大便正常。",
+                amount: "3-5茶匙，可分两次喂食"
+            },
+            {
+                stage: "适应期",
+                days: "第8-10天",
+                food: "南瓜泥（第一种蔬菜）",
+                texture: "南瓜去皮蒸熟，加少量温水打成<strong>极其细腻的泥状</strong>。",
+                nutrition: "<strong>营养</strong>：南瓜富含β-胡萝卜素和膳食纤维。<strong>排敏</strong>：单独添加，连续观察3天。",
+                amount: "1-2茶匙南瓜泥+适量米粉"
+            },
+            {
+                stage: "蔬菜引入期",
+                days: "第11-13天",
+                food: "胡萝卜泥",
+                texture: "胡萝卜蒸熟或煮熟，加水打泥。可滴入一两滴植物油（如核桃油）促进脂溶性维生素吸收。",
+                nutrition: "<strong>营养</strong>：胡萝卜是维生素A的优质来源。<strong>消化</strong>：初次食用部分宝宝大便可能带橙色，属正常现象。",
+                amount: "2-3茶匙，可与米粉混合"
+            },
+            {
+                stage: "蔬菜引入期",
+                days: "第14-16天",
+                food: "土豆泥",
+                texture: "土豆蒸熟后压成细泥，可适当过筛确保无颗粒。",
+                nutrition: "<strong>营养</strong>：提供碳水化合物和钾，能量供给稳定。注意与米粉错开量，避免主食过量。",
+                amount: "2-3茶匙，替代部分米粉"
+            },
+            {
+                stage: "蔬菜引入期",
+                days: "第17-19天",
+                food: "西兰花泥",
+                texture: "取花朵部分，沸水焯烫2分钟后蒸熟，打泥。",
+                nutrition: "<strong>营养</strong>：维生素C和钙含量丰富。<strong>排敏</strong>：属于低敏蔬菜，但仍需观察。",
+                amount: "2-3茶匙，可搭配米粉"
+            },
+            {
+                stage: "蔬菜引入期",
+                days: "第20-22天",
+                food: "菠菜泥",
+                texture: "菠菜焯水（去除大部分草酸）后取叶部打泥。",
+                nutrition: "<strong>营养</strong>：补充铁和叶酸，可搭配富含维C的水果泥促进铁吸收。",
+                amount: "1-2茶匙，不宜过多"
+            },
+            {
+                stage: "蔬菜引入期",
+                days: "第23-25天",
+                food: "苹果泥",
+                texture: "选择甜苹果，可生吃（刮泥）或蒸熟打泥。初期蒸熟可减少对肠胃的刺激。",
+                nutrition: "<strong>排敏</strong>：水果也需单独排敏。避免过早引入过甜水果，以免宝宝挑食。",
+                amount: "1-2茶匙，作为加餐"
+            },
+            {
+                stage: "蔬菜引入期",
+                days: "第26-28天",
+                food: "香蕉泥",
+                texture: "选择熟透的香蕉，用勺子直接刮取细腻的果泥。",
+                nutrition: "<strong>消化</strong>：香蕉有助排便，但个别宝宝过量食用可能引起便秘，需观察。",
+                amount: "1/4-1/2根香蕉，作为加餐"
+            },
+            {
+                stage: "蔬菜引入期",
+                days: "第29-30天",
+                food: "回顾与巩固",
+                texture: "可将已排敏的蔬菜（如南瓜、土豆）与米粉混合喂食。",
+                nutrition: "<strong>消化</strong>：给予肠胃休息和适应时间，观察混合食物后的反应。",
+                amount: "根据宝宝食量调整，总量约4-6茶匙"
+            },
+            
+            // 第二阶段：引入肉类与组合 (第31-60天)
+            {
+                stage: "肉类引入期",
+                days: "第31-33天",
+                food: "鸡肉泥（第一种肉类）",
+                texture: "选择鸡胸肉，剔除筋膜，蒸熟后加少量水打成<strong>非常细腻的泥糊</strong>。",
+                nutrition: "<strong>营养</strong>：优质蛋白质和维生素B6的重要来源，脂肪含量低。<strong>排敏</strong>：肉类是新的食物种类，需严格观察3天。",
+                amount: "1茶匙开始，逐渐增至2-3茶匙"
+            },
+            {
+                stage: "肉类引入期",
+                days: "第34-36天",
+                food: "猪肉泥",
+                texture: "选择猪里脊，焯水去血沫后蒸煮至软烂，打泥。",
+                nutrition: "<strong>营养</strong>：富含易于吸收的血红素铁，预防缺铁性贫血。",
+                amount: "1-2茶匙，可搭配蔬菜泥"
+            },
+            {
+                stage: "肉类引入期",
+                days: "第37-39天",
+                food: "牛肉泥",
+                texture: "牛肉浸泡去血水，高压炖煮至极软烂后打泥，可过筛。",
+                nutrition: "<strong>营养</strong>：铁和锌的优质来源。<strong>消化</strong>：纤维较粗，需确保足够软烂，少量开始。",
+                amount: "1茶匙开始，观察消化情况"
+            },
+            {
+                stage: "食物组合期",
+                days: "第40-42天",
+                food: "梨泥",
+                texture: "梨蒸熟后打泥，其天然甜味易被宝宝接受。",
+                nutrition: "<strong>消化</strong>：有助滋阴润肺，适合天气干燥时或宝宝有轻微干咳时。",
+                amount: "2-3茶匙，作为加餐"
+            },
+            {
+                stage: "食物组合期",
+                days: "第43-45天",
+                food: "山药泥",
+                texture: "山药蒸熟后压成泥，质地顺滑。注意处理时防止皮肤过敏。",
+                nutrition: "<strong>消化</strong>：山药对脾胃有益，易于消化吸收。",
+                amount: "2-3茶匙，可替代部分主食"
+            },
+            {
+                stage: "食物组合期",
+                days: "第46-48天",
+                food: "番茄泥",
+                texture: "番茄去皮去籽，蒸熟或煮熟后制成泥。",
+                nutrition: "<strong>营养</strong>：富含维生素C，与肉泥同食可促进铁吸收。",
+                amount: "1-2茶匙，搭配肉类食用"
+            },
+            {
+                stage: "食物组合期",
+                days: "第49-51天",
+                food: "鸡肉泥 + 已排敏蔬菜（如胡萝卜）",
+                texture: "将已排敏的鸡肉泥和胡萝卜泥混合。",
+                nutrition: "<strong>营养</strong>：实现营养互补。<strong>消化</strong>：首次尝试两种已排敏食物的组合，观察消化情况。",
+                amount: "肉类1-2茶匙+蔬菜2-3茶匙"
+            },
+            {
+                stage: "食物组合期",
+                days: "第52-54天",
+                food: "猪肉泥 + 已排敏蔬菜（如土豆）",
+                texture: "猪肉泥与土豆泥混合。",
+                nutrition: "<strong>排敏</strong>：因食材均已单独排敏，重点观察混合后有无不适。",
+                amount: "肉类1-2茶匙+蔬菜2-3茶匙"
+            },
+            {
+                stage: "食物组合期",
+                days: "第55-57天",
+                food: "尝试小米糊（替代一顿米粉）",
+                texture: "小米煮成烂粥，用辅食机打成细腻的米糊。",
+                nutrition: "<strong>营养</strong>：丰富主食种类，提供不同营养素。<strong>排敏</strong>：谷物也需排敏，观察3天。",
+                amount: "3-5茶匙，可搭配蔬菜泥"
+            },
+            {
+                stage: "食物组合期",
+                days: "第58-60天",
+                food: "回顾与巩固",
+                texture: "自由搭配已排敏的肉、菜、米粉，制作成二合一或三合一辅食。",
+                nutrition: "<strong>消化</strong>：此阶段末，宝宝应能较好适应多种泥糊状食物。",
+                amount: "根据宝宝食量，总量约6-8茶匙"
+            },
+            
+            // 第三阶段：丰富组合与质地过渡 (第61-90天)
+            {
+                stage: "新食材引入",
+                days: "第61-63天",
+                food: "1/4个蛋黄泥（首次尝试）",
+                texture: "鸡蛋煮熟，取1/4蛋黄，用少量温水或奶液压成<strong>极其细腻的泥糊</strong>。",
+                nutrition: "<strong>排敏重点</strong>：蛋黄是易过敏食物，需连续观察3天。<strong>营养</strong>：蛋黄富含铁、卵磷脂和维生素A。",
+                amount: "1/4个蛋黄开始，观察反应"
+            },
+            {
+                stage: "新食材引入",
+                days: "第64-66天",
+                food: "鳕鱼泥（第一种深海鱼）",
+                texture: "鳕鱼蒸熟，<strong>仔细检查并去除所有鱼刺</strong>，压成泥。",
+                nutrition: "<strong>排敏</strong>：鱼类也需单独排敏。<strong>营养</strong>：提供优质蛋白和DHA，促进大脑发育。",
+                amount: "1-2茶匙，可搭配蔬菜"
+            },
+            {
+                stage: "新食材引入",
+                days: "第67-69天",
+                food: "猪肝泥（补铁优选）",
+                texture: "猪肝浸泡去血水，加姜片煮熟，刮取少量肝泥或打泥，可混入已排敏蔬菜。",
+                nutrition: "<strong>营养</strong>：是膳食铁和维生素A的极好来源，预防缺铁性贫血。注意每周不超过两次。",
+                amount: "1茶匙开始，每周1-2次"
+            },
+            {
+                stage: "质地过渡期",
+                days: "第70-72天",
+                food: "豆腐泥（豆制品尝试）",
+                texture: "选择<strong>内酯豆腐或嫩豆腐</strong>，沸水焯烫后压成泥。",
+                nutrition: "<strong>排敏</strong>：大豆是常见过敏原，需观察3天。<strong>营养</strong>：补充植物蛋白和钙。",
+                amount: "2-3茶匙，可替代部分肉类"
+            },
+            {
+                stage: "质地过渡期",
+                days: "第73-75天",
+                food: "小米粥油 / 燕麦糊（新谷物）",
+                texture: "小米或燕麦煮成烂粥，取上层粥油或打成细腻糊状。",
+                nutrition: "<strong>营养</strong>：引入杂粮，丰富B族维生素和膳食纤维。<strong>消化</strong>：观察对新谷物的接受度。",
+                amount: "4-6茶匙，作为一餐主食"
+            },
+            {
+                stage: "质地过渡期",
+                days: "第76-78天",
+                food: "鸡肉香菇碎碎面",
+                texture: "将<strong>无盐婴幼儿面条</strong>掰碎，与已排敏的鸡肉泥、香菇泥同煮至软烂。",
+                nutrition: "<strong>质地过渡</strong>：首次引入细软碎面，锻炼咀嚼和吞咽能力。",
+                amount: "小半碗，根据宝宝食量调整"
+            },
+            {
+                stage: "质地过渡期",
+                days: "第79-81天",
+                food: "牛肉西兰花燕麦粥",
+                texture: "将已排敏的牛肉泥、西兰花碎与燕麦粥同煮。",
+                nutrition: "<strong>营养组合</strong>：实现主食、蛋白质、蔬菜的均衡搭配。",
+                amount: "半碗左右，可分两次食用"
+            },
+            {
+                stage: "质地过渡期",
+                days: "第82-84天",
+                food: "南瓜蛋黄羹",
+                texture: "将1/2个已排敏的蛋黄与南瓜泥混合，加适量水搅匀，蒸成嫩滑的蛋羹。",
+                nutrition: "<strong>消化</strong>：蒸蛋羹质地软滑，易于消化吸收。",
+                amount: "1/2-1个蛋黄量，作为一餐"
+            },
+            {
+                stage: "质地过渡期",
+                days: "第85-90天",
+                food: "回顾、混合与质地升级",
+                texture: "将已排敏的多种食材（如鱼肉、豆腐、蔬菜）组合。食物可处理成<strong>细小的软颗粒</strong>（如用刀背粗粗压碎）。",
+                nutrition: "<strong>关键锻炼</strong>：鼓励宝宝尝试用牙龈'咀嚼'软颗粒，这是至关重要的能力发展。",
+                amount: "根据宝宝食量，每餐约半碗"
+            },
+            
+            // 第四阶段：适应软固体与自主进食 (第91-100天)
+            {
+                stage: "自主进食期",
+                days: "第91-95天",
+                food: "引入'手指食物'",
+                texture: "提供蒸到<strong>非常软烂</strong>的蔬菜条（胡萝卜、西葫芦）、香蕉块、土豆块、嫩豆腐块等，大小以宝宝易于抓握为准。",
+                nutrition: "<strong>自主进食</strong>：让宝宝自己抓握食物，锻炼手眼协调能力和自主性。<strong>安全第一</strong>：大人需全程看护，食物要能用手指轻轻捏碎，防止呛噎。",
+                amount: "几种手指食物，每种2-3块"
+            },
+            {
+                stage: "自主进食期",
+                days: "第96-98天",
+                food: "丰富主食种类",
+                texture: "尝试<strong>软米饭、小馄饨、小饺子</strong>等。",
+                nutrition: "<strong>家庭饮食过渡</strong>：逐步让宝宝适应家庭饮食模式。",
+                amount: "小半碗主食+适量配菜"
+            },
+            {
+                stage: "自主进食期",
+                days: "第99-100天",
+                food: "尝试全蛋羹",
+                texture: "用整个鸡蛋（蛋清已排敏后）蒸蛋羹。",
+                nutrition: "<strong>排敏</strong>：蛋清比蛋黄更易过敏，如未尝试，需先少量排敏。",
+                amount: "1个鸡蛋制成的蛋羹"
+            }
+        ];
+
+        // 状态存储
+        let foodStatus = {};
+        let currentFoodIndex = 0;
+        
+        // 初始化函数
+        function init() {
+            loadFoodStatus();
+            renderTable();
+            setupSwipeEvents();
+        }
+        
+        // 从本地存储加载食物状态
+        function loadFoodStatus() {
+            const savedStatus = localStorage.getItem('babyFoodStatus');
+            if (savedStatus) {
+                foodStatus = JSON.parse(savedStatus);
+            }
+        }
+        
+        // 保存食物状态到本地存储
+        function saveFoodStatus() {
+            localStorage.setItem('babyFoodStatus', JSON.stringify(foodStatus));
+        }
+        
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.querySelector('#food-plan-table tbody');
+            tbody.innerHTML = '';
+            
+            // 添加阶段标题
+            addStageHeader(tbody, "第一阶段：单一食材排敏 (第1-30天)");
+            
+            // 添加第一阶段食物行
+            for (let i = 0; i < 10; i++) {
+                addFoodRow(tbody, i);
+            }
+            
+            // 添加第二阶段标题
+            addStageHeader(tbody, "第二阶段：引入肉类与组合 (第31-60天)");
+            
+            // 添加第二阶段食物行
+            for (let i = 10; i < 20; i++) {
+                addFoodRow(tbody, i);
+            }
+            
+            // 添加第三阶段标题
+            addStageHeader(tbody, "第三阶段：丰富组合与质地过渡 (第61-90天)");
+            
+            // 添加第三阶段食物行
+            for (let i = 20; i < 29; i++) {
+                addFoodRow(tbody, i);
+            }
+            
+            // 添加第四阶段标题
+            addStageHeader(tbody, "第四阶段：适应软固体与自主进食 (第91-100天)");
+            
+            // 添加第四阶段食物行
+            for (let i = 29; i < 32; i++) {
+                addFoodRow(tbody, i);
+            }
+        }
+        
+        // 添加食物行
+        function addFoodRow(tbody, index) {
+            const food = foodData[index];
+            const tr = document.createElement('tr');
+            tr.dataset.index = index;
+            
+            // 添加状态类
+            if (foodStatus[index]) {
+                tr.classList.add(`status-${foodStatus[index]}`);
+            }
+            
+            tr.innerHTML = `
+                <td>
+                    <div class="status-indicator"></div>
+                    ${food.stage}
+                </td>
+                <td><span class="day-badge">${food.days}</span></td>
+                <td><span class="food-highlight">${food.food}</span></td>
+                <td>${food.texture}</td>
+                <td>${food.nutrition}</td>
+            `;
+            
+            tr.addEventListener('click', () => showDetail(index));
+            tbody.appendChild(tr);
+        }
+        
+        // 添加阶段标题行
+        function addStageHeader(tbody, title) {
+            const tr = document.createElement('tr');
+            tr.className = 'stage-header';
+            tr.innerHTML = `<td colspan="5">${title}</td>`;
+            tbody.appendChild(tr);
+        }
+        
+        // 显示详情页面
+        function showDetail(index) {
+            currentFoodIndex = index;
+            const food = foodData[index];
+            
+            // 更新详情页面内容
+            document.getElementById('detail-title').textContent = `${food.days} - ${food.food}`;
+            
+            document.getElementById('detail-content').innerHTML = `
+                <div class="detail-section">
+                    <h3>食物质地与烹饪要点</h3>
+                    <p>${food.texture}</p>
+                </div>
+                <div class="detail-section">
+                    <h3>营养与排敏关注点</h3>
+                    <p>${food.nutrition}</p>
+                </div>
+                <div class="detail-section">
+                    <h3>喂食量推荐</h3>
+                    <p>${food.amount}</p>
+                </div>
+            `;
+            
+            // 更新状态显示
+            updateStatusDisplay();
+            
+            // 更新导航按钮状态
+            updateNavButtons();
+            
+            // 显示详情页面
+            document.getElementById('main-page').classList.remove('active');
+            document.getElementById('detail-page').classList.add('active');
+            document.getElementById('detail-page').classList.add('slide-left');
+            
+            // 添加滑动动画类
+            setTimeout(() => {
+                document.getElementById('detail-page').classList.remove('slide-left');
+            }, 300);
+        }
+        
+        // 返回主页面
+        function goBack() {
+            document.getElementById('detail-page').classList.remove('active');
+            document.getElementById('main-page').classList.add('active');
+            
+            // 更新表格中的状态标记
+            renderTable();
+        }
+        
+        // 设置食物状态
+        function setStatus(status) {
+            if (status === 'none') {
+                delete foodStatus[currentFoodIndex];
+            } else {
+                foodStatus[currentFoodIndex] = status;
+            }
+            
+            saveFoodStatus();
+            updateStatusDisplay();
+            
+            // 显示状态更新提示
+            showToast(`已记录：${getStatusText(status)}`);
+        }
+        
+        // 更新状态显示
+        function updateStatusDisplay() {
+            const statusElement = document.getElementById('current-status');
+            const status = foodStatus[currentFoodIndex] || 'none';
+            
+            statusElement.textContent = `当前状态：${getStatusText(status)}`;
+            statusElement.className = `current-status status-${status}-text`;
+        }
+        
+        // 获取状态文本
+        function getStatusText(status) {
+            switch (status) {
+                case 'good': return '接受良好';
+                case 'dislike': return '不爱吃';
+                case 'allergy': return '过敏';
+                default: return '未记录';
+            }
+        }
+        
+        // 导航到相邻食物
+        function navigateToAdjacent(direction) {
+            const newIndex = currentFoodIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < foodData.length) {
+                showDetail(newIndex);
+            }
+        }
+        
+        // 更新导航按钮状态
+        function updateNavButtons() {
+            document.getElementById('prev-btn').disabled = currentFoodIndex <= 0;
+            document.getElementById('next-btn').disabled = currentFoodIndex >= foodData.length - 1;
+        }
+        
+        // 设置滑动事件
+        function setupSwipeEvents() {
+            const detailContent = document.getElementById('detail-content');
+            let startX = 0;
+            let endX = 0;
+            
+            detailContent.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+            });
+            
+            detailContent.addEventListener('touchend', (e) => {
+                endX = e.changedTouches[0].clientX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const diff = startX - endX;
+                const minSwipeDistance = 50; // 最小滑动距离
+                
+                if (Math.abs(diff) > minSwipeDistance) {
+                    if (diff > 0) {
+                        // 向左滑动，显示下一个
+                        navigateToAdjacent(1);
+                    } else {
+                        // 向右滑动，显示上一个
+                        navigateToAdjacent(-1);
+                    }
+                }
+            }
+        }
+        
+        // 显示提示消息
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('export-toast');
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? 'var(--danger)' : 'var(--success)';
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 搜索功能
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#food-plan-table tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                // 跳过阶段标题行
+                if (row.classList.contains('stage-header')) {
+                    return;
+                }
+                
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // 显示/隐藏阶段标题行
+            const stageHeaders = document.querySelectorAll('.stage-header');
+            stageHeaders.forEach(header => {
+                const nextRows = [];
+                let nextRow = header.nextElementSibling;
+                
+                // 收集该阶段的所有行
+                while (nextRow && !nextRow.classList.contains('stage-header')) {
+                    nextRows.push(nextRow);
+                    nextRow = nextRow.nextElementSibling;
+                }
+                
+                // 如果该阶段有可见行，则显示标题，否则隐藏
+                const hasVisibleRows = nextRows.some(row => row.style.display !== 'none');
+                header.style.display = hasVisibleRows ? '' : 'none';
+            });
+        });
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('辅食计划表已加载完成');
+            init();
+        });
+    </script>
+</body>
+</html>
