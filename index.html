@@ -191,7 +191,7 @@
             position: relative;
         }
         
-        tr:nth-child(even) td {
+        tr:not(.stage-header):nth-child(even) td {
             background-color: var(--lighter);
         }
         
@@ -200,16 +200,20 @@
         }
         
         .stage-header {
-            background: linear-gradient(135deg, var(--dark), #34495e) !important;
             color: white;
             font-weight: bold;
             text-align: center;
             font-size: 1.1rem;
         }
         
+        /* 确保阶段标题行的背景色覆盖其他样式 */
+        table tbody tr.stage-header td {
+            background: linear-gradient(135deg, var(--dark), #34495e) !important;
+        }
+        
         .stage-header td {
             padding: 12px;
-            background: transparent;
+            background: linear-gradient(135deg, var(--dark), #34495e) !important;
             cursor: default;
         }
         
@@ -1107,9 +1111,9 @@
         }
         
         // 添加阶段标题行
-        function addStageHeader(tbody, title) {
+        function addStageHeader(tbody, title, isSecondStage = false) {
             const tr = document.createElement('tr');
-            tr.className = 'stage-header';
+            tr.className = isSecondStage ? 'stage-header second-stage' : 'stage-header';
             tr.innerHTML = `<td colspan="5">${title}</td>`;
             tbody.appendChild(tr);
         }
